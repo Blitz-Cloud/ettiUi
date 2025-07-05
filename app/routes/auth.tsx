@@ -6,7 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { useMsal, useMsalAuthentication } from "@azure/msal-react";
+import {
+  useIsAuthenticated,
+  useMsal,
+  useMsalAuthentication,
+} from "@azure/msal-react";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
@@ -15,6 +19,7 @@ import { Navigate, useNavigate, useSearchParams } from "react-router";
 import { Loader2Icon } from "lucide-react";
 import { InteractionType } from "@azure/msal-browser";
 import MicrosoftBtn from "~/components/microsftBtn";
+import { useEffect } from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -27,17 +32,16 @@ function HandelLogin() {}
 
 export default function Auth() {
   const { instance, accounts, inProgress } = useMsal();
-
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   if (searchParams.get("from")) {
     localStorage.setItem("from", searchParams.get("from") || "");
   }
+
   return (
     <div className="h-full flex justify-center items-center">
       <AuthenticatedTemplate>
-        <h1>User is authenticated</h1>
-        <Navigate to="/callback"></Navigate>
+        <Navigate to="/callback" />
       </AuthenticatedTemplate>
       <UnauthenticatedTemplate>
         <Card className=" w-full max-w-sm text-center">

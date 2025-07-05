@@ -1,25 +1,19 @@
 import { PublicClientApplication } from "@azure/msal-browser";
-import { configuration } from "~/root";
+import { configuration, pca } from "~/root";
 
 // This should be the same instance you pass to MsalProvider
-const msalInstance = new PublicClientApplication(configuration);
 
-export const getIdToken = async (msalInstance: PublicClientApplication) => {
-  const activeAccount = msalInstance.getActiveAccount(); // This will only return a non-null value if you have logic somewhere else that calls the setActiveAccount API
-  const accounts = msalInstance.getAllAccounts();
-
-  if (!activeAccount && accounts.length === 0) {
-    /*
-     * User is not signed in. Throw error or wait for user to login.
-     * Do not attempt to log a user in outside of the context of MsalProvider
-     */
+export const getIdToken = async () => {
+  const account = pca.getActiveAccount();
+  if (!account) {
+    throw Error(
+      "No active account! Verify a user has been signed in and setActiveAccount has been called."
+    );
   }
-  const request = {
+
+  const response = await pca.acquireTokenSilent({
+    account: account,
     scopes: ["User.Read"],
-    account: activeAccount || accounts[0],
-  };
-
-  const authResult = await msalInstance.acquireTokenSilent(request);
-
-  return authResult.idToken;
+  });
+  return response.idToken;
 };
