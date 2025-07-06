@@ -1,7 +1,7 @@
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 
 interface MarkdownRendererProps {
   content: string;
@@ -9,10 +9,7 @@ interface MarkdownRendererProps {
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkMath]}
-      rehypePlugins={[rehypeKatex]}
-    >
+    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
       {content}
     </ReactMarkdown>
   );

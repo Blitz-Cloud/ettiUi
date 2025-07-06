@@ -18,13 +18,14 @@ import {
   CardTitle,
   CardContent,
 } from "~/components/ui/card";
+import type { Route } from "../+types/root";
 
 interface DataFetcher {
   inProgress: Boolean;
   error: string;
   content: any;
 }
-export default function posts() {
+export default function posts({ params }: Route.ComponentProps) {
   const [data, setData] = useState<DataFetcher>({
     inProgress: true,
     content: null,
@@ -41,7 +42,7 @@ export default function posts() {
       })
       .then((response) => {
         response.idToken;
-        fetch("http://localhost:3000/api/posts", {
+        fetch("http://localhost:3000/api/" + params.postType, {
           headers: {
             Authorization: "Bearer " + account?.idToken,
           },

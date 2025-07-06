@@ -3,7 +3,12 @@ import type { Route } from "./+types/home";
 import { Navigate, useNavigate } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { Alert, AlertTitle } from "~/components/ui/alert";
-import { useIsAuthenticated, useMsal } from "@azure/msal-react";
+import {
+  AuthenticatedTemplate,
+  UnauthenticatedTemplate,
+  useIsAuthenticated,
+  useMsal,
+} from "@azure/msal-react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -13,50 +18,30 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Callback() {
+  const IsAuthenticated = useIsAuthenticated();
   const { instance, accounts } = useMsal();
-  const [errorMessage, setErrorMessage] = useState<String>();
   const navigate = useNavigate();
-  const hasNavigated = useRef(false);
-
-  // Capture redirectLocation outside of useEffect
   const redirectLocation = localStorage.getItem("from");
-  const allowAccess = localStorage.getItem("allowAccess");
-
   useEffect(() => {
-    if (
-      accounts.length != 0 &&
-      accounts[0].username.split("@")[1].includes("etti.upb.ro")
-    ) {
-      setErrorMessage("Acesta nu este un cont valid de student la etti");
-      setTimeout(() => {
-        navigate("/auth");
-        instance.clearCache();
-        return;
-      }, 3000);
-    } else if (accounts.length == 0) {
-      navigate("/auth");
-      return;
-    }
-
-    if (redirectLocation) {
-      localStorage.removeItem("from");
-      navigate(redirectLocation);
+    if (IsAuthenticated) {
+      instance.setActiveAccount(accounts[0]);
+      if (redirectLocation) {
+        localStorage.removeItem("from");
+        navigate(redirectLocation);
+      } else {
+        localStorage.removeItem("from");
+        navigate("/home");
+      }
     } else {
-      localStorage.removeItem("from");
-      navigate("/home");
+      navigate("/auth");
     }
-  }, [navigate, redirectLocation]); //Add redirectLocation to the dependency array
+  }, []); //Add redirectLocation to the dependency array
 
   return (
     <div className="h-[100vh] flex justify-center items-center ">
       <div className="flex justify-center">
         <Loader2Icon className="animate-spin" />
-        {!errorMessage && <p className="ml-2">Vei fi redirectionat curand</p>}
-        {errorMessage && (
-          <Alert>
-            <AlertTitle>{errorMessage}</AlertTitle>
-          </Alert>
-        )}
+        <p className="ml-2">Vei fi redirectionat curand</p>
       </div>
     </div>
   );

@@ -34,8 +34,8 @@ export const configuration: Configuration = {
     clientId: "cbaeae5e-cede-4a4a-ac99-63731f4679d7",
     // clientId: "7b8e4862-5633-4baf-978a-e8f8459126b5",
     redirectUri: "http://localhost:5173/callback",
-
-    // redirectUri: "http://localhost:3000/auth/microsoft/callback",
+    authority:
+      "https://login.microsoftonline.com/2d8cc8ba-8dda-4334-9e5c-fac2092e9bac",
   },
   cache: {
     cacheLocation: "localStorage", // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
