@@ -41,8 +41,8 @@ export default function posts({ params }: Route.ComponentProps) {
         account: account || undefined,
       })
       .then((response) => {
-        response.idToken;
-        fetch("http://localhost:3000/api/" + params.postType, {
+        console.log(response.idToken);
+        fetch("http://localhost:3000/api/" + params.postType + "/posts", {
           headers: {
             Authorization: "Bearer " + account?.idToken,
           },
@@ -71,11 +71,18 @@ export default function posts({ params }: Route.ComponentProps) {
       <AuthenticatedTemplate>
         <NiceLayout>
           <div className="h-[150px] flex flex-col justify-center items-center text-center">
-            <h1 className="text-5xl">Blog</h1>
+            <h1 className="text-5xl">
+              {params.postType === "blog" && "Blog"}
+              {params.postType === "labs" && "Laboratoare"}
+            </h1>
             <p className="mt-2 leading-7">
+              {params.postType === "blog" &&
+                `
               Aici se gasesc articolele pe care le am scris. Unele din ele sunt
               in gluma alte nu. Oricum ar fi fiecare dintre ele prezinta o
-              problema pe care am intampinat o la un moment dat.
+              problema pe care am intampinat o la un moment dat.`}
+              {params.postType === "labs" &&
+                "Aici se gasesc solutiile problemelor de la laborator. Unele dintre ele pot fi corecte altele nu, de asemenea uneori poate o problema poate fi rezolvata mult mai simplu."}
             </p>
           </div>
 
@@ -89,7 +96,16 @@ export default function posts({ params }: Route.ComponentProps) {
               {data.content &&
                 data.content.map((data) => {
                   return (
-                    <a href={"/post/" + data.Date + "/" + data.Title}>
+                    <a
+                      href={
+                        "/" +
+                        params.postType +
+                        "/post/" +
+                        data.Date +
+                        "/" +
+                        data.Title
+                      }
+                    >
                       <Card className="min-h-[150px]">
                         <CardHeader>
                           <CardTitle>{data.Title}</CardTitle>

@@ -18,6 +18,14 @@ body {
     color-scheme: dark;
   }
 }
+pre {
+  background-color: transparent;
+  margin: 0px;
+  padding: 2px;
+}
+code {
+  white-space: pre-line;
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);

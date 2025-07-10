@@ -31,7 +31,7 @@ export default function Home({ params }: Route.ComponentProps) {
     fetch(
       "http://localhost:3000/api/" +
         params.postType +
-        "/" +
+        "/post/" +
         params.date +
         "/" +
         params.title,
