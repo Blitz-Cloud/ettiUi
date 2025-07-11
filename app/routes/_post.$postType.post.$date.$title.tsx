@@ -43,7 +43,7 @@ export default function Home({ params }: Route.ComponentProps) {
     ).then(async (resp) => {
       resp = await resp.json();
       console.log(resp);
-      let out: String;
+      let out: string;
       out = resp.Content;
       out = out.replaceAll("\\(", "$");
       out = out.replaceAll("\\)", "$");

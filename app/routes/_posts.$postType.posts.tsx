@@ -6,7 +6,7 @@ import {
 } from "@azure/msal-react";
 import { AlertCircleIcon, Divide, Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router";
+import { Navigate, useLocation } from "react-router";
 import NiceLayout from "~/components/niceLayout";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import {
@@ -33,6 +33,8 @@ export default function posts({ params }: Route.ComponentProps) {
   });
   const { instance, accounts, inProgress } = useMsal();
   const account = useAccount(accounts[0] || {});
+  const location = useLocation();
+  console.log(import.meta.env.MODE);
 
   useEffect(() => {
     instance
@@ -66,7 +68,7 @@ export default function posts({ params }: Route.ComponentProps) {
   return (
     <div>
       <UnauthenticatedTemplate>
-        <Navigate to="/auth?from=/posts" />
+        <Navigate to={"/auth?from=" + location.pathname} />
       </UnauthenticatedTemplate>
       <AuthenticatedTemplate>
         <NiceLayout>
