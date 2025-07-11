@@ -6,7 +6,7 @@ import {
 } from "@azure/msal-react";
 import { AlertCircleIcon, Divide, Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router";
+import { Link, Navigate, useLocation } from "react-router";
 import NiceLayout from "~/components/niceLayout";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import {
@@ -116,8 +116,8 @@ export default function posts({ params }: Route.ComponentProps) {
               {data.content &&
                 data.content.map((data) => {
                   return (
-                    <a
-                      href={
+                    <Link
+                      to={
                         "/" +
                         params.postType +
                         "/post/" +
@@ -132,7 +132,7 @@ export default function posts({ params }: Route.ComponentProps) {
                           <CardDescription>{data.Description}</CardDescription>
                         </CardHeader>
                       </Card>
-                    </a>
+                    </Link>
                   );
                 })}
             </div>
