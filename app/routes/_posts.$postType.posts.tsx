@@ -19,6 +19,7 @@ import {
   CardContent,
 } from "~/components/ui/card";
 import type { Route } from "../+types/root";
+import Navbar from "~/components/navbar";
 
 interface DataFetcher {
   inProgress: Boolean;
@@ -79,7 +80,7 @@ export default function posts({ params }: Route.ComponentProps) {
             }));
           });
       });
-  }, []);
+  }, [params.postType]);
 
   return (
     <div>
@@ -88,12 +89,13 @@ export default function posts({ params }: Route.ComponentProps) {
       </UnauthenticatedTemplate>
       <AuthenticatedTemplate>
         <NiceLayout>
-          <div className="h-[150px] flex flex-col justify-center items-center text-center">
+          <Navbar />
+          <div className="h-[175px] flex flex-col justify-center items-center text-center">
             <h1 className="text-5xl">
               {params.postType === "blog" && "Blog"}
               {params.postType === "labs" && "Laboratoare"}
             </h1>
-            <p className="mt-2 leading-7">
+            <p className="mx-2 leading-7">
               {params.postType === "blog" &&
                 `
               Aici se gasesc articolele pe care le am scris. Unele din ele sunt
@@ -110,7 +112,7 @@ export default function posts({ params }: Route.ComponentProps) {
               <p className="ml-1">Se incarca articolele</p>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 sm:gap-3 gap-6 ">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 sm:gap-3 gap-6 px-2">
               {data.content &&
                 data.content.map((data) => {
                   return (

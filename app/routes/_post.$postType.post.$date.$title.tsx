@@ -10,6 +10,7 @@ import { Navigate, useLocation, useNavigate } from "react-router";
 import NiceLayout from "~/components/niceLayout";
 import MarkdownRenderer from "~/components/markdownRenderer";
 import { getIdToken } from "~/api/getIdToken";
+import Navbar from "~/components/navbar";
 
 interface ParamsType {
   date: string;
@@ -58,11 +59,10 @@ export default function Home({ params }: Route.ComponentProps) {
     <>
       <AuthenticatedTemplate>
         <NiceLayout>
-          <div className="prose">
-            <h1 className="text-center">{params.title}</h1>
+          <Navbar></Navbar>
+          <div className="prose max-w-screen px-2">
+            <h1 className="text-center h-full">{params.title}</h1>
             <p>{params.date}</p>
-          </div>
-          <div className="leading-8">
             {contentApi && <MarkdownRenderer content={contentApi} />}
           </div>
         </NiceLayout>

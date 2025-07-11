@@ -30,7 +30,7 @@ export default function Callback() {
         navigate(redirectLocation);
       } else {
         localStorage.removeItem("from");
-        navigate("/posts");
+        navigate("/labs/posts");
       }
     } else {
       navigate("/auth");
