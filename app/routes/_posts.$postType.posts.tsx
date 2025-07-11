@@ -35,6 +35,14 @@ export default function posts({ params }: Route.ComponentProps) {
   const account = useAccount(accounts[0] || {});
   const location = useLocation();
   console.log(import.meta.env.MODE);
+  console.log(
+    (import.meta.env.DEV
+      ? import.meta.env.VITE_BK_SRV_DEV
+      : import.meta.env.VITE_BK_SRV_PROD) +
+      "/api/" +
+      params.postType +
+      "/posts"
+  );
 
   useEffect(() => {
     instance
@@ -44,11 +52,19 @@ export default function posts({ params }: Route.ComponentProps) {
       })
       .then((response) => {
         console.log(response.idToken);
-        fetch("http://localhost:3000/api/" + params.postType + "/posts", {
-          headers: {
-            Authorization: "Bearer " + account?.idToken,
-          },
-        })
+        fetch(
+          (import.meta.env.DEV
+            ? import.meta.env.VITE_BK_SRV_DEV
+            : import.meta.env.VITE_BK_SRV_PROD) +
+            "/api/" +
+            params.postType +
+            "/posts",
+          {
+            headers: {
+              Authorization: "Bearer " + account?.idToken,
+            },
+          }
+        )
           .then(async (response) => {
             const data = await response.json();
             console.log(data);

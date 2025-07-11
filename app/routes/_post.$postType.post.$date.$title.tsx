@@ -26,10 +26,13 @@ export function meta({}: Route.MetaArgs) {
 export default function Home({ params }: Route.ComponentProps) {
   const { accounts, instance, inProgress } = useMsal();
   const [contentApi, setContent] = useState<String>();
-  // console.log(accounts[0].username);
+
   useEffect(() => {
     fetch(
-      "http://localhost:3000/api/" +
+      (import.meta.env.DEV
+        ? import.meta.env.VITE_BK_SRV_DEV
+        : import.meta.env.VITE_BK_SRV_PROD) +
+        "/api/" +
         params.postType +
         "/post/" +
         params.date +
