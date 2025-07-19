@@ -11,6 +11,7 @@ import NiceLayout from "~/components/niceLayout";
 import MarkdownRenderer from "~/components/markdownRenderer";
 import { getIdToken } from "~/api/getIdToken";
 import Navbar from "~/components/navbar";
+import type { Content } from "~/types/content";
 
 interface ParamsType {
   date: string;
@@ -26,8 +27,8 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home({ params }: Route.ComponentProps) {
   const { accounts, instance, inProgress } = useMsal();
-  const [contentApi, setContent] = useState<String>();
-
+  const [contentApi, setContent] = useState<Content>();
+  let dateString: string;
   useEffect(() => {
     fetch(
       (import.meta.env.DEV
@@ -36,9 +37,7 @@ export default function Home({ params }: Route.ComponentProps) {
         "/api/" +
         params.postType +
         "/post/" +
-        params.date +
-        "/" +
-        params.title,
+        params.id,
       {
         headers: {
           Authorization: "Bearer " + accounts[0].idToken,
@@ -46,13 +45,23 @@ export default function Home({ params }: Route.ComponentProps) {
       }
     ).then(async (resp) => {
       resp = await resp.json();
-      console.log(resp);
       let out: string;
       out = resp.Content;
+      // fix for latex in markdown
       out = out.replaceAll("\\(", "$");
       out = out.replaceAll("\\)", "$");
-      console.log(out);
-      setContent(out);
+      resp.Content = out;
+      let parsedDate = Date.parse(resp.Date);
+      let date = new Date(parsedDate);
+      resp.PrettyDate =
+        date.getUTCDate().toString() +
+        ":" +
+        (date.getUTCMonth() + 1) +
+        ":" +
+        date.getUTCFullYear();
+
+      console.log(resp);
+      setContent(resp);
     });
   }, []);
   return (
@@ -61,9 +70,9 @@ export default function Home({ params }: Route.ComponentProps) {
         <NiceLayout>
           <Navbar></Navbar>
           <div className="prose max-w-screen px-2">
-            <h1 className="text-center h-full">{params.title}</h1>
-            <p>{params.date}</p>
-            {contentApi && <MarkdownRenderer content={contentApi} />}
+            <h1 className="text-center h-full">{contentApi?.Title}</h1>
+            <p>{contentApi?.PrettyDate}</p>
+            {contentApi && <MarkdownRenderer content={contentApi.Content} />}
           </div>
         </NiceLayout>
       </AuthenticatedTemplate>

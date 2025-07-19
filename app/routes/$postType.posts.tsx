@@ -116,16 +116,7 @@ export default function posts({ params }: Route.ComponentProps) {
               {data.content &&
                 data.content.map((data) => {
                   return (
-                    <Link
-                      to={
-                        "/" +
-                        params.postType +
-                        "/post/" +
-                        data.Date +
-                        "/" +
-                        data.Title
-                      }
-                    >
+                    <Link to={"/" + params.postType + "/post/" + data.ID}>
                       <Card className="min-h-[150px]">
                         <CardHeader>
                           <CardTitle>{data.Title}</CardTitle>
