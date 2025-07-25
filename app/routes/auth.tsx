@@ -62,7 +62,7 @@ export default function Auth() {
               ) : (
                 <MicrosoftBtn
                   onClick={() => {
-                    instance.loginPopup({
+                    instance.loginRedirect({
                       scopes: ["User.Read"],
                       prompt: "select_account",
                     });
