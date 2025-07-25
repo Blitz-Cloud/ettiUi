@@ -16,7 +16,6 @@ export default function Home() {
       <div className="text-center">
         <h1 className="font-bold text-4xl">Bine ai venit</h1>
         <p>Aceasta pagina este inca in constructie </p>
-        <Outlet />
         <Button variant="outline" className="mt-2">
           <Link to="/auth">Autentificate</Link>
         </Button>

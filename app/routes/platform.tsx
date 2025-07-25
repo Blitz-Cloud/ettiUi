@@ -11,20 +11,15 @@ import Navbar from "~/components/navbar";
 export default function PlatformPlan({ params }: Route.ComponentProps) {
   return (
     <div>
-      <AuthenticatedTemplate>
-        <NiceLayout>
-          <Navbar />
-          <div className="prose prose-h1:text-center max-w-svw mt-10">
-            <MarkdownRenderer
-              content={`# Salut aici poti gasi detalii despre aceasta platforma
+      <NiceLayout>
+        <Navbar />
+        <div className="prose prose-h1:text-center max-w-svw mt-10">
+          <MarkdownRenderer
+            content={`# Salut aici poti gasi detalii despre aceasta platforma
               `}
-            />
-          </div>
-        </NiceLayout>
-      </AuthenticatedTemplate>
-      <UnauthenticatedTemplate>
-        <Navigate to={"/auth?from=" + location.pathname}></Navigate>
-      </UnauthenticatedTemplate>
+          />
+        </div>
+      </NiceLayout>
     </div>
   );
 }

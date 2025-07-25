@@ -1,11 +1,13 @@
 interface Content {
+  dexieID?: number;
   ID: number;
   Title: string;
   Description: string;
   Date: Date;
   PrettyDate: string;
   Tags: string;
-  UnivYearAndSemester: number;
+  UniYearAndSemester: number;
   Content: string;
 }
+
 export type { Content };
