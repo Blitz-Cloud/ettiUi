@@ -44,7 +44,7 @@ export default function posts({ params }: Route.ComponentProps) {
         </p>
       </div>
 
-      {contentManager?.loading == true && isLoading == true ? (
+      {contentManager?.loading == true || contentManager === undefined ? (
         <div className="flex justify-center">
           <Loader2Icon className="animate-spin" />
           <p className="ml-1">Se incarca articolele</p>

@@ -20,7 +20,6 @@ export interface ContentManagerProps {
   queriedContent: Content[] | undefined;
   postType: string | "";
   setPostType: (postType: string) => void;
-
   setQuery: (queryPromise: PromiseExtended<Content[]> | undefined) => void;
 }
 
@@ -79,9 +78,7 @@ export function ContentManager({ children }: ContentProviderProps) {
     [loading, error, queriedContent, postType, setPostType, setQueryPromise]
   );
 
-  useEffect(() => {
- 
-  }, [postType, queriedContent]);
+  useEffect(() => {}, [postType, queriedContent]);
 
   return (
     <ContentManagerContext.Provider value={{ ...contextValues }}>

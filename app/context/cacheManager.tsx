@@ -19,7 +19,7 @@ export const CacheManagerContext = createContext<CacheStatus | undefined>(
 
 export function CacheManager({ children }: CacheManagerProps) {
   const [cacheStatus, setCacheStatus] = useState<CacheStatus>({
-    loading: false,
+    loading: true,
     error: "",
     cached: false,
     lastCached: "",
@@ -29,14 +29,9 @@ export function CacheManager({ children }: CacheManagerProps) {
     localStorageStatus.length !== 0 ? JSON.parse(localStorageStatus) : {};
 
   useEffect(() => {
-    if (
-      localStorageStatus?.length == 0 ||
-      localStorageCacheStatus.cached == false
-    ) {
-      console.log("INFO: Start creating localCache");
-      setCacheStatus({ ...cacheStatus, loading: true });
-      // purging the localCache in case it exists, preventing duplicating data, and weird behavior
-      db.delete({ disableAutoOpen: false })
+    async function cacheCreator() {
+      await db
+        .delete({ disableAutoOpen: false })
         .then(() => {
           console.log("INFO: Local cache is purged, in case it existed");
         })
@@ -48,7 +43,23 @@ export function CacheManager({ children }: CacheManagerProps) {
           setCacheStatus({ ...cacheStatus, loading: false, error: err });
         });
 
-      fetch(
+      console.log("INFO: Start creating localCache");
+      setCacheStatus({ ...cacheStatus, loading: true });
+      // purging the localCache in case it exists, preventing duplicating data, and weird behavior
+      await db
+        .delete({ disableAutoOpen: false })
+        .then(() => {
+          console.log("INFO: Local cache is purged, in case it existed");
+        })
+        .catch((err) => {
+          console.log(
+            "ERROR: An error occurred while trying to delete localCache\nPlease refresh the window\nError log:\n" +
+              err
+          );
+          setCacheStatus({ ...cacheStatus, loading: false, error: err });
+        });
+
+      await fetch(
         (import.meta.env.DEV
           ? import.meta.env.VITE_BK_SRV_DEV
           : import.meta.env.VITE_BK_SRV_PROD) + "/api/labs/posts"
@@ -77,7 +88,7 @@ export function CacheManager({ children }: CacheManagerProps) {
           setCacheStatus({ ...cacheStatus, loading: false, error: err });
         });
 
-      fetch(
+      await fetch(
         (import.meta.env.DEV
           ? import.meta.env.VITE_BK_SRV_DEV
           : import.meta.env.VITE_BK_SRV_PROD) + "/api/blog/posts"
@@ -114,6 +125,13 @@ export function CacheManager({ children }: CacheManagerProps) {
         loading: false,
         cached: true,
       });
+    }
+
+    if (
+      localStorageStatus?.length == 0 ||
+      localStorageCacheStatus.cached == false
+    ) {
+      cacheCreator();
     } else {
       setCacheStatus({ ...localStorageCacheStatus });
     }
