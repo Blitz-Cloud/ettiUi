@@ -1,4 +1,10 @@
-import { createContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { db } from "~/lib/db";
 import type { Content } from "~/types/content";
 
@@ -17,123 +23,164 @@ export const CacheManagerContext = createContext<CacheStatus | undefined>(
   undefined
 );
 
+// ce trebuie facut
+
+// 1. citit localStorage
+// 2. validat si verificat daca exista un cache
+// 3. YES localCache exists and the dataBase is not empty -> seteaza state ul
+// 4. No localCache doesnt exists ->
+// 4.1. Executa requesturile necesare pentru a obtine contentul si create localCache
+
+async function checkDBHealth() {
+  const labsCount = await db.labs.count();
+  const blogCount = await db.blog.count();
+  if (labsCount != 0 && blogCount != 0) {
+    return true;
+  }
+  return false;
+}
+
 export function CacheManager({ children }: CacheManagerProps) {
-  const [cacheStatus, setCacheStatus] = useState<CacheStatus>({
+  const [cacheStatus, setCacheStatusSTATE] = useState<CacheStatus>({
     loading: true,
     error: "",
     cached: false,
     lastCached: "",
   });
-  const localStorageStatus: string = localStorage.getItem("cacheStatus") || "";
+
+  const setCacheStatus = useCallback((state: CacheStatus) => {
+    setCacheStatusSTATE({ ...state });
+    localStorage.setItem("cacheStatus", JSON.stringify({ ...state }));
+  }, []);
+
+  const localStorageInfo: string = localStorage.getItem("cacheStatus") || "";
+
   const localStorageCacheStatus: CacheStatus =
-    localStorageStatus.length !== 0 ? JSON.parse(localStorageStatus) : {};
+    localStorageInfo.length > 0
+      ? JSON.parse(localStorageInfo)
+      : {
+          loading: true,
+          cached: false,
+          error: "",
+          lastCached: "",
+        };
 
   useEffect(() => {
     async function cacheCreator() {
-      await db
-        .delete({ disableAutoOpen: false })
-        .then(() => {
-          console.log("INFO: Local cache is purged, in case it existed");
-        })
-        .catch((err) => {
-          console.log(
-            "ERROR: An error occurred while trying to delete localCache\nPlease refresh the window\nError log:\n" +
-              err
-          );
-          setCacheStatus({ ...cacheStatus, loading: false, error: err });
-        });
-
+      setCacheStatus({
+        ...localStorageCacheStatus,
+        loading: true,
+        cached: false,
+        error: "",
+      });
+      // the main logic
+      await db.delete({ disableAutoOpen: false });
+      console.log("INFO: Local cache is purged, in case it existed");
       console.log("INFO: Start creating localCache");
-      setCacheStatus({ ...cacheStatus, loading: true });
-      // purging the localCache in case it exists, preventing duplicating data, and weird behavior
-      await db
-        .delete({ disableAutoOpen: false })
-        .then(() => {
-          console.log("INFO: Local cache is purged, in case it existed");
-        })
-        .catch((err) => {
-          console.log(
-            "ERROR: An error occurred while trying to delete localCache\nPlease refresh the window\nError log:\n" +
-              err
-          );
-          setCacheStatus({ ...cacheStatus, loading: false, error: err });
-        });
 
-      await fetch(
+      let response = await fetch(
         (import.meta.env.DEV
           ? import.meta.env.VITE_BK_SRV_DEV
           : import.meta.env.VITE_BK_SRV_PROD) + "/api/labs/posts"
-      )
-        .then(async (resp) => {
-          const data: Content[] = await resp.json();
-          db.labs
-            .bulkAdd(data)
-            .then((data) => {
-              console.log("INFO Added " + data + " labs");
-            })
-            .catch((err) => {
-              console.log(
-                "ERROR An error occurred while trying to add all entries to the localCache\nError log:" +
-                  err
-              );
-              setCacheStatus({ ...cacheStatus, loading: false, error: err });
-            });
-        })
-        .catch((err) => {
+      );
+      if (response.ok) {
+        const data: Content[] = await response.json();
+        const resp = await db.labs.bulkAdd(data);
+        if (resp) {
+          console.log("INFO Added " + resp + " labs");
+        } else {
           console.log(
-            "ERROR An error occurred while fetching the content please refresh the page\nError log:\n" +
-              err
+            "ERROR An error occurred while trying to add all labs to the localCache\nPlease refresh the window"
           );
+          setCacheStatus({
+            loading: false,
+            cached: false,
+            error:
+              "An error occurred while trying to add all labs to the localCache",
+            lastCached: "",
+          });
+        }
+      } else {
+        console.log(
+          "ERROR An error occurred while fetching the content please refresh the page"
+        );
 
-          setCacheStatus({ ...cacheStatus, loading: false, error: err });
+        setCacheStatus({
+          loading: false,
+          cached: false,
+          error: "An error occurred while fetching the content",
+          lastCached: "",
         });
-
-      await fetch(
+      }
+      response = await fetch(
         (import.meta.env.DEV
           ? import.meta.env.VITE_BK_SRV_DEV
           : import.meta.env.VITE_BK_SRV_PROD) + "/api/blog/posts"
-      )
-        .then(async (resp) => {
-          const data: Content[] = await resp.json();
-          db.blog
-            .bulkAdd(data)
-            .then((data) => {
-              console.log("INFO Added " + data + " blog posts");
-            })
-            .catch((err) => {
-              console.log(
-                "ERROR An error occurred while trying to add all entries to the localCache\nError log:" +
-                  err
-              );
-              setCacheStatus({ ...cacheStatus, loading: false, error: err });
-            });
-        })
-        .catch((err) => {
-          console.log(
-            "ERROR An error occurred while fetching the content please refresh the page\nError log:\n" +
-              err
-          );
-
-          setCacheStatus({ ...cacheStatus, loading: false, error: err });
-        });
-      localStorage.setItem(
-        "cacheStatus",
-        JSON.stringify({ ...cacheStatus, loading: false, cached: true })
       );
+      if (response.ok) {
+        const data: Content[] = await response.json();
+        const resp = await db.blog.bulkAdd(data);
+        if (resp) {
+          console.log("INFO Added " + resp + " blog posts");
+        } else {
+          console.log(
+            "ERROR An error occurred while trying to add all blog posts to the localCache\nPlease refresh the window"
+          );
+          setCacheStatus({
+            loading: false,
+            cached: false,
+            error:
+              "An error occurred while trying to add all labs to the localCache",
+            lastCached: "",
+          });
+        }
+      } else {
+        console.log(
+          "ERROR An error occurred while fetching the content please refresh the page"
+        );
+
+        setCacheStatus({
+          loading: false,
+          cached: false,
+          error: "An error occurred while fetching the content",
+          lastCached: "",
+        });
+      }
+
+      // finally seating the state
+
       setCacheStatus({
-        ...cacheStatus,
+        ...localStorageCacheStatus,
         loading: false,
         cached: true,
+        error: "",
       });
     }
 
     if (
-      localStorageStatus?.length == 0 ||
-      localStorageCacheStatus.cached == false
+      localStorageCacheStatus.cached == false &&
+      localStorageCacheStatus.error.length == 0
     ) {
+      console.log("Creating local cache");
       cacheCreator();
-    } else {
-      setCacheStatus({ ...localStorageCacheStatus });
+    } else if (localStorageCacheStatus.error.length > 0) {
+      console.log(
+        "ERROR: A problem was detected was detected.\n" +
+          localStorageCacheStatus.error +
+          "\nRecreating cache now"
+      );
+      cacheCreator();
+    }
+
+    if (localStorageCacheStatus.cached == true) {
+      checkDBHealth().then(async (isDBHealthy) => {
+        if (!isDBHealthy) {
+          console.log("ERROR: Cache is unhealthy. Now recreating.");
+          await cacheCreator();
+        } else {
+          setCacheStatus({ ...localStorageCacheStatus });
+        }
+      });
     }
   }, []);
 
