@@ -14,7 +14,6 @@ interface CacheManagerProps {
 
 interface CacheStatus {
   loading: boolean;
-  error: string;
   cached: boolean;
   lastCached: string;
 }
@@ -23,17 +22,39 @@ export const CacheManagerContext = createContext<CacheStatus | undefined>(
   undefined
 );
 
-// ce trebuie facut
-
-// 1. citit localStorage
-// 2. validat si verificat daca exista un cache
-// 3. YES localCache exists and the dataBase is not empty -> seteaza state ul
-// 4. No localCache doesnt exists ->
-// 4.1. Executa requesturile necesare pentru a obtine contentul si create localCache
-
 async function checkDBHealth() {
   const labsCount = await db.labs.count();
   const blogCount = await db.blog.count();
+  const localStorageInfo: string = localStorage.getItem("cacheStatus") || "";
+
+  const localStorageCacheStatus: CacheStatus =
+    localStorageInfo.length > 0
+      ? JSON.parse(localStorageInfo)
+      : {
+          loading: true,
+          cached: false,
+          lastCached: "",
+        };
+  let lastCacheTimeLocalStorage = Date.parse(
+    localStorageCacheStatus.lastCached
+  );
+  let lastServerSyncTime;
+
+  let response = await fetch(
+    (import.meta.env.DEV
+      ? import.meta.env.VITE_BK_SRV_DEV
+      : import.meta.env.VITE_BK_SRV_PROD) + "/api/admin/last-sync"
+  );
+  if (response.ok) {
+    lastServerSyncTime = Date.parse(await response.text());
+  }
+
+  if (
+    Number.isNaN(lastCacheTimeLocalStorage) ||
+    lastCacheTimeLocalStorage < lastServerSyncTime
+  ) {
+    return false;
+  }
   if (labsCount != 0 && blogCount != 0) {
     return true;
   }
@@ -43,7 +64,6 @@ async function checkDBHealth() {
 export function CacheManager({ children }: CacheManagerProps) {
   const [cacheStatus, setCacheStatusSTATE] = useState<CacheStatus>({
     loading: true,
-    error: "",
     cached: false,
     lastCached: "",
   });
@@ -61,7 +81,6 @@ export function CacheManager({ children }: CacheManagerProps) {
       : {
           loading: true,
           cached: false,
-          error: "",
           lastCached: "",
         };
 
@@ -71,7 +90,6 @@ export function CacheManager({ children }: CacheManagerProps) {
         ...localStorageCacheStatus,
         loading: true,
         cached: false,
-        error: "",
       });
       // the main logic
       await db.delete({ disableAutoOpen: false });
@@ -95,8 +113,6 @@ export function CacheManager({ children }: CacheManagerProps) {
           setCacheStatus({
             loading: false,
             cached: false,
-            error:
-              "An error occurred while trying to add all labs to the localCache",
             lastCached: "",
           });
         }
@@ -108,10 +124,10 @@ export function CacheManager({ children }: CacheManagerProps) {
         setCacheStatus({
           loading: false,
           cached: false,
-          error: "An error occurred while fetching the content",
           lastCached: "",
         });
       }
+
       response = await fetch(
         (import.meta.env.DEV
           ? import.meta.env.VITE_BK_SRV_DEV
@@ -129,8 +145,6 @@ export function CacheManager({ children }: CacheManagerProps) {
           setCacheStatus({
             loading: false,
             cached: false,
-            error:
-              "An error occurred while trying to add all labs to the localCache",
             lastCached: "",
           });
         }
@@ -142,33 +156,34 @@ export function CacheManager({ children }: CacheManagerProps) {
         setCacheStatus({
           loading: false,
           cached: false,
-          error: "An error occurred while fetching the content",
           lastCached: "",
         });
       }
 
-      // finally seating the state
-
-      setCacheStatus({
-        ...localStorageCacheStatus,
-        loading: false,
-        cached: true,
-        error: "",
-      });
+      response = await fetch(
+        (import.meta.env.DEV
+          ? import.meta.env.VITE_BK_SRV_DEV
+          : import.meta.env.VITE_BK_SRV_PROD) + "/api/admin/last-sync"
+      );
+      if (response.ok) {
+        setCacheStatus({
+          ...localStorageCacheStatus,
+          loading: false,
+          cached: true,
+          lastCached: await response.text(),
+        });
+      } else {
+        setCacheStatus({
+          loading: false,
+          cached: false,
+          lastCached: "",
+        });
+      }
     }
 
-    if (
-      localStorageCacheStatus.cached == false &&
-      localStorageCacheStatus.error.length == 0
-    ) {
+    // logica principala
+    if (localStorageCacheStatus.cached == false) {
       console.log("Creating local cache");
-      cacheCreator();
-    } else if (localStorageCacheStatus.error.length > 0) {
-      console.log(
-        "ERROR: A problem was detected was detected.\n" +
-          localStorageCacheStatus.error +
-          "\nRecreating cache now"
-      );
       cacheCreator();
     }
 
