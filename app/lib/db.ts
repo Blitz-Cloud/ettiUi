@@ -14,8 +14,8 @@ const db = new Dexie("content") as Dexie & {
 
 // Schema declaration:
 db.version(1).stores({
-  labs: "++dexieID, ID, Title, Description, Date, PrettyDate, Tags, UniYearAndSemester, Content", // primary key "id" (for the runtime!)
-  blog: "++dexieID, ID, Title, Description, Date, PrettyDate, Tags, UniYearAndSemester, Content", // primary key "id" (for the runtime!)
+  labs: "++dexieID, ID, Title, Description, Date, PrettyDate, Subject, Tags, UniYearAndSemester, Content", // primary key "id" (for the runtime!)
+  blog: "++dexieID, ID, Title, Description, Date, PrettyDate, Subject, Tags, UniYearAndSemester, Content", // primary key "id" (for the runtime!)
 });
 
 export { db };
