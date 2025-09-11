@@ -6,6 +6,7 @@ interface Content {
   Date: Date;
   PrettyDate: string;
   Tags: string;
+  Subject: string;
   UniYearAndSemester: number;
   Content: string;
 }
