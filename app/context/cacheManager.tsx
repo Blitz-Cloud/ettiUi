@@ -50,7 +50,7 @@ async function checkDBHealth() {
   }
 
   if (
-    Number.isNaN(lastCacheTimeLocalStorage) ||
+    localStorageCacheStatus.lastCached.length == 0 ||
     lastCacheTimeLocalStorage < lastServerSyncTime
   ) {
     return false;
@@ -165,6 +165,7 @@ export function CacheManager({ children }: CacheManagerProps) {
           ? import.meta.env.VITE_BK_SRV_DEV
           : import.meta.env.VITE_BK_SRV_PROD) + "/api/admin/last-sync"
       );
+
       if (response.ok) {
         setCacheStatus({
           ...localStorageCacheStatus,
@@ -173,6 +174,7 @@ export function CacheManager({ children }: CacheManagerProps) {
           lastCached: await response.text(),
         });
       } else {
+        console.log(response);
         setCacheStatus({
           loading: false,
           cached: false,
