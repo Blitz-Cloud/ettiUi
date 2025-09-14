@@ -53,8 +53,10 @@ const components: { title: string; href: string; description: string }[] = [
 
 export default function Navbar() {
   return (
-    <nav className="flex justify-between mb-5 px-2">
-      <Link to="/labs/posts">Etti Helper</Link>
+    <nav className="flex justify-between text-xl mb-5 px-2">
+      <Link className="font-bold text-xl " to="/labs/posts">
+        Etti Helper
+      </Link>
       <div>
         <Link to="/blog/posts" className="mx-2">
           Blog
