@@ -79,10 +79,8 @@ export default function Post({ params, loaderData }: Route.ComponentProps) {
   if (contentManager?.queriedContent) {
     const date = new Date(contentManager?.queriedContent[0].Date);
     return (
-      <div className="prose max-w-screen px-2">
-        <h1 className="text-slate-900 mb-0">
-          {contentManager?.queriedContent[0]?.Title}
-        </h1>
+      <div className="prose dark:prose-invert max-w-screen px-2">
+        <h1 className=" mb-0">{contentManager?.queriedContent[0]?.Title}</h1>
         <p className="w-[350x] mt-0 flex items-center">
           <Calendar className="mx-3" />
           {date.getUTCDate() +
