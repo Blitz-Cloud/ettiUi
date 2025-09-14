@@ -5,7 +5,7 @@ interface NiceLayoutProps {
 }
 const NiceLayout: React.FC<NiceLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-svh flex-col bg-secondary">
+    <div className="min-h-svh flex-col dark:bg-secondary">
       <main className="mx-auto max-w-[950px] py-10"> {children}</main>
     </div>
   );

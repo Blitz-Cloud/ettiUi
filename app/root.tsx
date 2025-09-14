@@ -90,7 +90,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="">
         <MsalProvider instance={pca}>{children}</MsalProvider>
         <ScrollRestoration />
         <Scripts />
