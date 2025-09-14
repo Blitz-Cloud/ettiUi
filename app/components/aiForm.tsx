@@ -60,6 +60,7 @@ export function CourseSelectionForm() {
           // Mobile-first: flex-col with vertical space
           // On medium screens (md) and up: flex-row with horizontal space
           className="
+          bg-card
             flex flex-col justify-around items-center space-y-4
             md:flex-row md:space-x-4 md:space-y-0
             p-4 border rounded-md shadow-sm w-full
