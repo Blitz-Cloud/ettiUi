@@ -58,7 +58,7 @@ export default function Navbar() {
       <Link className="font-bold text-xl " to="/labs/posts">
         Etti Helper
       </Link>
-      <div>
+      <div className="flex items-center">
         <Link to="/blog/posts" className="mx-2">
           Blog
         </Link>
