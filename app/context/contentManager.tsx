@@ -43,8 +43,8 @@ export function ContentManager({ children }: ContentProviderProps) {
 
   useEffect(() => {
     setLoading(cacheStatus?.loading || false);
-    setError(cacheStatus?.error || null);
-  }, [cacheStatus?.loading, cacheStatus?.error]);
+    // setError(cacheStatus?.error || null);
+  }, [cacheStatus?.loading]);
 
   const getQueryPromise = useCallback(() => {
     if (queryPromise !== undefined) {

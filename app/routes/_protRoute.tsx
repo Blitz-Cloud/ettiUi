@@ -7,6 +7,7 @@ import NiceLayout from "~/components/niceLayout";
 import Navbar from "~/components/navbar";
 import { CacheManager } from "~/context/cacheManager";
 import { ContentManager } from "~/context/contentManager";
+import { ThemeProvider } from "~/context/themeManager";
 export default function RouteProtector() {
   return (
     <>
@@ -15,12 +16,14 @@ export default function RouteProtector() {
       </UnauthenticatedTemplate>
       <AuthenticatedTemplate>
         <NiceLayout>
-          <Navbar></Navbar>
-          <CacheManager>
-            <ContentManager>
-              <Outlet />
-            </ContentManager>
-          </CacheManager>
+          <ThemeProvider defaultTheme="light" storageKey="theme">
+            <Navbar></Navbar>
+            <CacheManager>
+              <ContentManager>
+                <Outlet />
+              </ContentManager>
+            </CacheManager>
+          </ThemeProvider>
         </NiceLayout>
       </AuthenticatedTemplate>
     </>

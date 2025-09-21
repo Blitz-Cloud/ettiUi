@@ -12,6 +12,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "./ui/navigation-menu";
+import { ThemeToggle } from "./themToggle";
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -64,6 +65,7 @@ export default function Navbar() {
         <Link to="/labs/posts" className="mx-2">
           Labs
         </Link>
+        <ThemeToggle />
       </div>
     </nav>
   );
