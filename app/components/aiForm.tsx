@@ -15,6 +15,7 @@ import { Input } from "./ui/input";
 import { db } from "~/lib/db";
 import { useContext, useState } from "react";
 import { ContentManagerContext } from "~/context/contentManager";
+import { X } from "lucide-react";
 
 // Define your form schema using Zod for validation
 const formSchema = z.object({
@@ -42,14 +43,18 @@ export function CourseSelectionForm() {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values.Year * 10 + values.Semester);
+    // console.log(values.Year * 10 + values.Semester);
     contentManager?.setQuery(
       db.labs
         .where("UniYearAndSemester")
         .equals(values.Year * 10 + values.Semester)
         .toArray()
     );
-    console.log(values);
+    document.getElementById("reset")?.classList.remove("hidden");
+    document.getElementById("submit")?.classList.add("!hidden");
+
+    // console.log(values);
+    // console.log(state);
   }
 
   return (
@@ -109,7 +114,24 @@ export function CourseSelectionForm() {
           />
 
           {/* Submit Button */}
-          <Button type="submit">Aplica filtru</Button>
+          <Button id="submit" type="submit">
+            Aplica filtru
+          </Button>
+          <Button
+            className=" hidden"
+            id="reset"
+            onClick={() => {
+              document.getElementById("submit")?.classList.remove("!hidden");
+              document.getElementById("reset")?.classList.add("hidden");
+              console.log("BTN clicked");
+              console.log(contentManager?.postType);
+              contentManager?.setQuery(db.labs.toArray());
+            }}
+            variant="destructive"
+            type="button"
+          >
+            <X></X>
+          </Button>
         </form>
       </Form>
     </div>

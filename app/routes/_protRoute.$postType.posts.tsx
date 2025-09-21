@@ -55,7 +55,6 @@ export default function posts({ params }: Route.ComponentProps) {
           <div className="grid sm:grid-cols-1 md:grid-cols-2 sm:gap-3 gap-6 px-2">
             {contentManager?.queriedContent &&
               contentManager.queriedContent.map((data) => {
-                console.log(data);
                 return (
                   <Link to={"/" + params.postType + "/post/" + data.ID}>
                     <Card className="min-h-[200px]">

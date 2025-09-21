@@ -53,7 +53,6 @@ export function ContentManager({ children }: ContentProviderProps) {
       switch (postType) {
         case "labs":
           return db.labs.toArray();
-          break;
         case "blog":
           return db.blog.toArray();
         default:
@@ -66,6 +65,7 @@ export function ContentManager({ children }: ContentProviderProps) {
     queryPromise,
     postType,
   ]);
+
   const contextValues = useMemo<ContentManagerProps>(
     () => ({
       loading: loading,
@@ -78,7 +78,7 @@ export function ContentManager({ children }: ContentProviderProps) {
     [loading, error, queriedContent, postType, setPostType, setQueryPromise]
   );
 
-  useEffect(() => {}, [postType, queriedContent]);
+  // useEffect(() => {}, [postType, queriedContent]);
 
   return (
     <ContentManagerContext.Provider value={{ ...contextValues }}>
