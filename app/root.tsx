@@ -77,6 +77,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       enabled: true,
     });
   }, []);
+
   return (
     <html lang="en">
       <head>
