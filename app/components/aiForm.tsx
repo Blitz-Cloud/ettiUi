@@ -118,7 +118,7 @@ export function CourseSelectionForm() {
             Aplica filtru
           </Button>
           <Button
-            className=" hidden"
+            className="hidden "
             id="reset"
             onClick={() => {
               document.getElementById("submit")?.classList.remove("!hidden");
@@ -130,7 +130,10 @@ export function CourseSelectionForm() {
             variant="destructive"
             type="button"
           >
-            <X></X>
+            <div className="flex items-center">
+              <X className=""></X>
+              <p>Sterge filtrul</p>
+            </div>
           </Button>
         </form>
       </Form>
