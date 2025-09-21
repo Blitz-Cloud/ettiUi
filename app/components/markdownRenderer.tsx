@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -8,11 +8,22 @@ import {
   solarizedlight,
   nightOwl,
 } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { useTheme } from "~/context/themeManager";
+import { solarizedLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
 interface MarkdownRendererProps {
   content: string;
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
+  const { theme } = useTheme();
+  const [colorScheme, setColorScheme] = useState();
+  useEffect(() => {
+    if (theme == "light") {
+      setColorScheme(solarizedLight);
+    } else if (theme == "dark") {
+      setColorScheme(nightOwl);
+    }
+  }, [theme]);
   return (
     <ReactMarkdown
       remarkPlugins={[remarkMath]}
@@ -27,7 +38,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               PreTag="div"
               children={String(children).replace(/\n$/, "")}
               language={match[1]}
-              style={solarizedlight}
+              style={colorScheme}
             />
           ) : (
             <code {...rest} className={className}>
