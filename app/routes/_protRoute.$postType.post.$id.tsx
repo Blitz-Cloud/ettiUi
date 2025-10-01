@@ -2,9 +2,10 @@ import type { Route } from "../+types/root";
 import MarkdownRenderer from "~/components/markdownRenderer";
 import type { Content } from "~/types/content";
 import { db } from "~/lib/db";
-import { Calendar, Contact } from "lucide-react";
+import { Calendar, ClipboardCopy, Computer } from "lucide-react";
 import { useContext, useEffect } from "react";
 import { ContentManagerContext } from "~/context/contentManager";
+import { Button } from "~/components/ui/button";
 
 interface ParamsType {
   date: string;
@@ -18,35 +19,19 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-// export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-//   console.log(params.id);
-//   switch (params.postType) {
-//     case "labs":
-//       return await db.labs
-//         .where("ID")
-//         .equals(ID)
-//         .toArray()
-//         .then((data) => {
-//           return data;
-//         });
-//       break;
-//     case "blog":
-//       return await db.blog
-//         .where("ID")
-//         .equals(ID)
-//         .toArray()
-//         .then((data) => {
-//           // FIX do not touch. Este o solutie care ar fi trebuit sa fie temporara insa deoarece atunci cand augmentezi md cu latex este posibil sa apara latex inline acesta solutie rezolva problemele de afisare care pot aparea
-//           data[0].Content = data[0].Content.replaceAll("\\(", "$");
-//           data[0].Content = data[0].Content.replaceAll("\\)", "$");
-//           return data;
-//         });
-//       break;
-//     default:
-//       return "";
-//       break;
-//   }
-// }
+function getPrettyDate(date: Date): string {
+  date = new Date(date);
+  const day = (date.getUTCDate()).toLocaleString().padStart(2,"0")
+  const monthNames = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  return `${day}_${month}_${year}`;
+}
+
 
 export default function Post({ params, loaderData }: Route.ComponentProps) {
   const contentManager = useContext(ContentManagerContext);
@@ -60,27 +45,17 @@ export default function Post({ params, loaderData }: Route.ComponentProps) {
         break;
       case "blog":
         contentManager?.setQuery(db.blog.where("ID").equals(ID).toArray());
-        // FIX do not touch. Este o solutie care ar fi trebuit sa fie temporara insa deoarece atunci cand augmentezi md cu latex este posibil sa apara latex inline acesta solutie rezolva problemele de afisare care pot aparea
-        // data[0].Content = data[0].Content.replaceAll("\\(", "$");
-        // data[0].Content = data[0].Content.replaceAll("\\)", "$");
         break;
       default:
         break;
     }
-    data = contentManager?.queriedContent;
-    // console.log(data);
-    console.log(contentManager?.queriedContent);
   }, []);
-  // // if (data?.length != 0) {
-  // //   data[0].Content = data[0].Content.replaceAll("\\(", "$");
-  // //   data[0].Content = data[0].Content.replaceAll("\\)", "$");
-  // // }
 
-  if (contentManager?.queriedContent) {
-    const date = new Date(contentManager?.queriedContent[0].Date);
+  if (contentManager.queriedContent.length !=0) {
+    const date = new Date(contentManager.queriedContent[0].Date);
     return (
       <div className="prose dark:prose-invert max-w-screen px-2">
-        <h1 className=" mb-0">{contentManager?.queriedContent[0]?.Title}</h1>
+        <h1 className=" mb-0">{contentManager.queriedContent[0]?.Title}</h1>
         <p className="w-[350x] mt-0 flex items-center">
           <Calendar className="mx-3" />
           {date.getUTCDate() +
@@ -89,13 +64,43 @@ export default function Post({ params, loaderData }: Route.ComponentProps) {
             ":" +
             date.getFullYear()}
         </p>
-        {contentManager?.queriedContent[0] && (
-          <MarkdownRenderer
-            content={contentManager.queriedContent[0].Content}
-          />
-        )}
+        
+        {contentManager.queriedContent[0].Subject !=""?
+        (
+        <div className="">
+        <Button className="m-1"  onClick={()=>{
+         let string = 
+        `ettiWatcher open https://github.com/Blitz-Cloud/ettiContent /${contentManager.queriedContent[0].Subject}/${contentManager.queriedContent[0].Title.replaceAll(" ","_")}-${contentManager.queriedContent[0].UniYearAndSemester}-${getPrettyDate(contentManager.queriedContent[0].Date)}`
+         console.log(string) 
+          navigator.clipboard.writeText(string)
+        }}> 
+        
+        <Computer/>
+        
+        Open in code editor</Button>
+        <Button className="m-1" onClick={()=>{
+          let content= contentManager.queriedContent[0].Content
+          let codeExample = content.slice(content.indexOf("\n", content.indexOf("```")),content.indexOf("```\n"))
+          console.log(codeExample)
+          console.log("Code copied")
+          navigator.clipboard.writeText(codeExample)
+        }}>
+          <ClipboardCopy/>
+          Copiaza codul in clipboard 
+        </Button>
+        </div>
+
+
+        ):""  
+      
+      
+      }
+      {contentManager?.queriedContent[0] && (
+        <MarkdownRenderer
+          content={contentManager.queriedContent[0].Content}
+        />
+      )}
       </div>
-      // <div>hello world</div>
     );
   }
 }

@@ -1,8 +1,7 @@
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
-  useDebugValue,
   useEffect,
   useMemo,
   useState,
@@ -17,15 +16,15 @@ import type { PromiseExtended } from "dexie";
 export interface ContentManagerProps {
   loading: boolean;
   error: string | null;
-  queriedContent: Content[] | undefined;
+  queriedContent: Content[] ;
   postType: string | "";
   setPostType: (postType: string) => void;
   setQuery: (queryPromise: PromiseExtended<Content[]> | undefined) => void;
 }
 
 export const ContentManagerContext = createContext<
-  ContentManagerProps | undefined
->(undefined);
+  ContentManagerProps| null
+>(null);
 
 interface ContentProviderProps {
   children: ReactNode;
@@ -61,10 +60,12 @@ export function ContentManager({ children }: ContentProviderProps) {
     }
   }, [queryPromise, postType]);
 
-  const queriedContent = useLiveQuery(getQueryPromise, [
+  const liveQuery = useLiveQuery(getQueryPromise, [
     queryPromise,
     postType,
   ]);
+
+  const queriedContent = liveQuery ?? []
 
   const contextValues = useMemo<ContentManagerProps>(
     () => ({
