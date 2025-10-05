@@ -1,3 +1,4 @@
+import { useMsal } from "@azure/msal-react";
 import {
   createContext,
   useCallback,
@@ -23,6 +24,7 @@ export const CacheManagerContext = createContext<CacheStatus | undefined>(
 );
 
 async function checkDBHealth() {
+  const { accounts, instance, inProgress } = useMsal();
   const labsCount = await db.labs.count();
   const blogCount = await db.blog.count();
   const localStorageInfo: string = localStorage.getItem("cacheStatus") || "";
@@ -44,6 +46,13 @@ async function checkDBHealth() {
     (import.meta.env.DEV
       ? import.meta.env.VITE_BK_SRV_DEV
       : import.meta.env.VITE_BK_SRV_PROD) + "/api/admin/last-sync"
+      ,
+      {
+      method: "GET",
+      headers: new Headers({
+          Authorization: "Bearer " + accounts[0].idToken,
+      })
+      }
   );
   if (response.ok) {
     lastServerSyncTime = Date.parse(await response.text());
@@ -62,6 +71,7 @@ async function checkDBHealth() {
 }
 
 export function CacheManager({ children }: CacheManagerProps) {
+  const { accounts, instance, inProgress } = useMsal();
   const [cacheStatus, setCacheStatusSTATE] = useState<CacheStatus>({
     loading: true,
     cached: false,
@@ -99,7 +109,14 @@ export function CacheManager({ children }: CacheManagerProps) {
       let response = await fetch(
         (import.meta.env.DEV
           ? import.meta.env.VITE_BK_SRV_DEV
-          : import.meta.env.VITE_BK_SRV_PROD) + "/api/labs/posts"
+          : import.meta.env.VITE_BK_SRV_PROD) + "/api/labs/posts",
+
+      {
+      method: "GET",
+      headers: new Headers({
+          Authorization: "Bearer " + accounts[0].idToken,
+      })
+      }
       );
       if (response.ok) {
         const data: Content[] = await response.json();
@@ -131,7 +148,14 @@ export function CacheManager({ children }: CacheManagerProps) {
       response = await fetch(
         (import.meta.env.DEV
           ? import.meta.env.VITE_BK_SRV_DEV
-          : import.meta.env.VITE_BK_SRV_PROD) + "/api/blog/posts"
+          : import.meta.env.VITE_BK_SRV_PROD) + "/api/blog/posts",
+
+      {
+      method: "GET",
+      headers: new Headers({
+          Authorization: "Bearer " + accounts[0].idToken,
+      })
+      }
       );
       if (response.ok) {
         const data: Content[] = await response.json();
@@ -163,7 +187,14 @@ export function CacheManager({ children }: CacheManagerProps) {
       response = await fetch(
         (import.meta.env.DEV
           ? import.meta.env.VITE_BK_SRV_DEV
-          : import.meta.env.VITE_BK_SRV_PROD) + "/api/admin/last-sync"
+          : import.meta.env.VITE_BK_SRV_PROD) + "/api/admin/last-sync",
+
+      {
+      method: "GET",
+      headers: new Headers({
+          Authorization: "Bearer " + accounts[0].idToken,
+      })
+      }
       );
 
       if (response.ok) {
