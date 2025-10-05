@@ -51,10 +51,7 @@ export default function posts({ params }: Route.ComponentProps) {
         </div>
       ) : (
         <>
-          {
-            params.postType ==="labs" &&  
           <CourseSelectionForm />
-          }
           <div className="grid sm:grid-cols-1 md:grid-cols-2 sm:gap-3 gap-6 px-2">
             {contentManager?.queriedContent &&
               contentManager.queriedContent.map((data) => {
