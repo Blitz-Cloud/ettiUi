@@ -24,7 +24,6 @@ export const CacheManagerContext = createContext<CacheStatus | undefined>(
 );
 
 async function checkDBHealth() {
-  const { accounts, instance, inProgress } = useMsal();
   const labsCount = await db.labs.count();
   const blogCount = await db.blog.count();
   const localStorageInfo: string = localStorage.getItem("cacheStatus") || "";
@@ -49,9 +48,6 @@ async function checkDBHealth() {
       ,
       {
       method: "GET",
-      headers: new Headers({
-          Authorization: "Bearer " + accounts[0].idToken,
-      })
       }
   );
   if (response.ok) {
