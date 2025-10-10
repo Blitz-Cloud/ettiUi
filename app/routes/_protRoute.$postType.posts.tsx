@@ -17,6 +17,14 @@ import { useForm } from "react-hook-form";
 import { CourseSelectionForm } from "~/components/aiForm";
 import { ContentManagerContext } from "~/context/contentManager";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/ui/accordion";
+import { LabsForm } from "~/components/labsSelection";
+
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {}
 
 export default function posts({ params }: Route.ComponentProps) {
@@ -51,7 +59,7 @@ export default function posts({ params }: Route.ComponentProps) {
         </div>
       ) : (
         <>
-          <CourseSelectionForm />
+          <LabsForm/> 
           <div className="grid sm:grid-cols-1 md:grid-cols-2 sm:gap-3 gap-6 px-2">
             {contentManager?.queriedContent &&
               contentManager.queriedContent.map((data) => {
