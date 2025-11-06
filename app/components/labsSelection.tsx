@@ -23,7 +23,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "~/components/ui/accordion"
+} from "~/components/ui/accordion";
 const items = [
   {
     id: "pclp1",
@@ -37,10 +37,6 @@ const items = [
     id: "sda",
     label: "SDA",
   },
-//   {
-//     id:"all",
-//     label:"ALL"
-//   }
 ] as const;
 
 const FormSchema = z.object({
@@ -59,10 +55,10 @@ export function LabsForm() {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data.items)
+    console.log(data.items);
     contentManager?.setQuery(
-       db.labs.where("Subject").anyOf(data.items).toArray() 
-    )
+      db.labs.where("Subject").anyOf(data.items).toArray()
+    );
     document.getElementById("reset")?.classList.remove("hidden");
     document.getElementById("submit")?.classList.add("!hidden");
   }
@@ -72,15 +68,13 @@ export function LabsForm() {
       <AccordionItem value="item-1">
         <AccordionTrigger>Materii</AccordionTrigger>
         <AccordionContent>
-          <Form {...form} >
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 "
-            >
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">
               <FormField
                 control={form.control}
                 name="items"
                 render={() => (
                   <FormItem className="flex">
-                    
                     {items.map((item) => (
                       <FormField
                         key={item.id}
@@ -122,26 +116,29 @@ export function LabsForm() {
                 )}
               />
               <div>
-
-              <Button id="submit" type="submit">Submit</Button> 
-              <Button
-            className="hidden"
-            id="reset"
-            onClick={() => {
-              document.getElementById("submit")?.classList.remove("!hidden");
-              document.getElementById("reset")?.classList.add("hidden");
-              console.log("BTN clicked");
-              console.log(contentManager?.postType);
-              contentManager?.setQuery(db.labs.toArray());
-            }}
-            variant="destructive"
-            type="button"
-          >
-            <div className="flex items-center">
-              <X className=""></X>
-              <p>Sterge filtrul</p>
-            </div>
-          </Button>
+                <Button id="submit" type="submit">
+                  Submit
+                </Button>
+                <Button
+                  className="hidden"
+                  id="reset"
+                  onClick={() => {
+                    document
+                      .getElementById("submit")
+                      ?.classList.remove("!hidden");
+                    document.getElementById("reset")?.classList.add("hidden");
+                    console.log("BTN clicked");
+                    console.log(contentManager?.postType);
+                    contentManager?.setQuery(db.labs.toArray());
+                  }}
+                  variant="destructive"
+                  type="button"
+                >
+                  <div className="flex items-center">
+                    <X className=""></X>
+                    <p>Sterge filtrul</p>
+                  </div>
+                </Button>
               </div>
             </form>
           </Form>

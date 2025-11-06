@@ -9,6 +9,7 @@ interface Content {
   Subject: string;
   UniYearAndSemester: number;
   Content: string;
+  CodeExample:string;
 }
 
 export type { Content };

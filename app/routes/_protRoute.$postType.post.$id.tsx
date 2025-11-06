@@ -11,9 +11,9 @@ interface ParamsType {
   title: string;
 }
 
-export function meta({}: Route.MetaArgs) {
+export function meta({params}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
+    { title: ""+params.postType+" "+ params.id },
     { name: "description", content: "Welcome to React Router!" },
   ];
 }
@@ -54,7 +54,7 @@ export default function Post({ params, loaderData }: Route.ComponentProps) {
         </p>
         {contentManager?.queriedContent[0] && (
           <MarkdownRenderer
-            content={contentManager.queriedContent[0].Content}
+            content={contentManager.queriedContent[0].Content + (params.postType == "labs" ? "```cpp\n": "") + contentManager.queriedContent[0].CodeExample + ( params.postType == "labs" ? "```": "") }
           />
         )}
       </div>
